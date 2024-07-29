@@ -1,12 +1,21 @@
 import { Button, Navbar, TextInput } from "flowbite-react";
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { AiOutlineSearch } from "react-icons/ai";
 import { FaMoon } from "react-icons/fa";
 
 export default function Header() {
   const path = useLocation().pathname;
-  console.log("Path to the console " + path);
+
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleLinkClick = () => {
+    setIsOpen(true);
+  };
 
   return (
     <Navbar className="border-b-2">
@@ -37,24 +46,33 @@ export default function Header() {
         <Link to="/sign-in">
           <Button gradientDuoTone="purpleToBlue">Sign In</Button>
         </Link>
-        <Navbar.Toggle />
+        <Navbar.Toggle onClick={handleToggle} />
       </div>
-      <Navbar.Collapse>
-        <Link to="/">
-          <Navbar.Link active={path === "/"} as={"div"}>
-            Home
-          </Navbar.Link>
-        </Link>
-        <Link to="/about">
-          <Navbar.Link active={path === "/about"} as={"div"}>
-            About
-          </Navbar.Link>
-        </Link>
-        <Link to="/projects">
-          <Navbar.Link active={path === "/projects"} as={"div"}>
-            Projects
-          </Navbar.Link>
-        </Link>
+      <Navbar.Collapse className={isOpen ? "block" : "hidden"}>
+        <Navbar.Link
+          as={Link}
+          to="/"
+          active={path === "/"}
+          onClick={handleLinkClick}
+        >
+          Home
+        </Navbar.Link>
+        <Navbar.Link
+          as={Link}
+          to="/about"
+          active={path === "/about"}
+          onClick={handleLinkClick}
+        >
+          About
+        </Navbar.Link>
+        <Navbar.Link
+          as={Link}
+          to="/projects"
+          active={path === "/projects"}
+          onClick={handleLinkClick}
+        >
+          Projects
+        </Navbar.Link>
       </Navbar.Collapse>
     </Navbar>
   );
