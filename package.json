@@ -1,0 +1,26 @@
+{
+  "name": "blogapp",
+  "version": "1.0.0",
+  "description": "[Visit blog](https://blog-app-murex-theta.vercel.app/)",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon api/index.js",
+    "start": "node api/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SRIKARREDDY-dotorg/BlogApp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SRIKARREDDY-dotorg/BlogApp/issues"
+  },
+  "homepage": "https://github.com/SRIKARREDDY-dotorg/BlogApp#readme",
+  "dependencies": {
+    "express": "^4.19.2",
+    "nodemon": "^3.1.4"
+  }
+}
