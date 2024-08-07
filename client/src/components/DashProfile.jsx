@@ -16,7 +16,8 @@ import {
   updateFailure,
   deleteUserStart,
   deleteUserSuccess,
-  deleteUserFailure
+  deleteUserFailure,
+  signOutSuccess,
 } from "../redux/user/userSlice";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 
@@ -126,11 +127,11 @@ export default function DashProfile() {
     try {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       const data = await res.json();
 
-      if(!res.ok) {
+      if (!res.ok) {
         dispatch(deleteUserFailure(data.message));
       } else {
         dispatch(deleteUserSuccess(data));
@@ -138,7 +139,23 @@ export default function DashProfile() {
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
     }
-  }
+  };
+
+  const handleSignout = async () => {
+    try {
+      const res = await fetch("/api/user/signout", {
+        method: "POST",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(signOutSuccess());
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   return (
     <div className="max-w-lg mx-auto p-3 w-full">
@@ -217,7 +234,9 @@ export default function DashProfile() {
         <span onClick={() => setShowModal(true)} className="cursor-pointer">
           Delete Account
         </span>
-        <span className="cursor-pointer">Sign Out</span>
+        <span className="cursor-pointer" onClick={handleSignout}>
+          Sign Out
+        </span>
       </div>
       {updateUserSuccess && (
         <Alert color="success" className="mt-5">
@@ -243,15 +262,15 @@ export default function DashProfile() {
         <Modal.Header />
         <Modal.Body>
           <div className="text-center">
-            <HiOutlineExclamationCircle
-              className="w-14 h-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto"
-            />
-            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">Are you sure you want to delete account?</h3>
+            <HiOutlineExclamationCircle className="w-14 h-14 text-gray-400 dark:text-gray-200 mb-4 mx-auto" />
+            <h3 className="mb-5 text-lg text-gray-500 dark:text-gray-400">
+              Are you sure you want to delete account?
+            </h3>
             <div className="flex justify-between">
-              <Button color='failure' onClick={handleDeleteUser}>
+              <Button color="failure" onClick={handleDeleteUser}>
                 Yes I'm Sure
               </Button>
-              <Button color='gray' onClick={handleDeleteUser}>
+              <Button color="gray" onClick={handleDeleteUser}>
                 No, cancel
               </Button>
             </div>
