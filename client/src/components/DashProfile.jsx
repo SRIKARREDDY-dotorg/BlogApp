@@ -227,11 +227,16 @@ export default function DashProfile() {
           placeholder="password"
           onChange={handleChange}
         />
-        <Button type="submit" gradientDuoTone="purpleToBlue" outline disabled={loading || imageFileUploading}>
+        <Button
+          type="submit"
+          gradientDuoTone="purpleToBlue"
+          outline
+          disabled={loading || imageFileUploading}
+        >
           {loading ? "Loading..." : "Update"}
         </Button>
         {currentUser.isAdmin && (
-          <Link to={'/create-post'}>
+          <Link to={"/create-post"}>
             <Button
               type="button"
               gradientDuoTone="purpleToPink"
@@ -282,7 +287,7 @@ export default function DashProfile() {
               <Button color="failure" onClick={handleDeleteUser}>
                 Yes I'm Sure
               </Button>
-              <Button color="gray" onClick={handleDeleteUser}>
+              <Button color="gray" onClick={() => setShowModal(false)}>
                 No, cancel
               </Button>
             </div>
