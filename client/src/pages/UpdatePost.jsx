@@ -129,6 +129,7 @@ export default function UpdatePost() {
             onChange={(e) => {
               setFormData({ ...formData, category: e.target.value });
             }}
+            value={formData.category}
           >
             <option value="uncategorised">Select a Category</option>
             <option value="javascript">JavaScript</option>
