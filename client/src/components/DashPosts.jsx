@@ -25,9 +25,9 @@ export default function DashPosts() {
       if (!res.ok) {
         console.log(data.message);
       } else {
-        setUserPosts((prev) => {
-          prev.filter((post) => post._id !== postIdToDelete);
-        });
+        setUserPosts((prev) => 
+          prev.filter((post) => post._id !== postIdToDelete)
+        );
       }
     } catch (error) {
       console.log(error.message);
@@ -42,7 +42,8 @@ export default function DashPosts() {
         // console.log(data);
         if (res.ok) {
           setUserPosts(data.posts);
-          if (data.length < 9) {
+          if (data.posts.length < 9) {
+            console.log('Posts size is less than 9');
             setShowMore(false);
           }
         }
