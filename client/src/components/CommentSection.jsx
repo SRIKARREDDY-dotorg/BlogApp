@@ -81,9 +81,11 @@ export default function CommentSection({ postId }) {
               Submit
             </Button>
           </div>
-          <Alert color="failure" className="mt-5">
-            {commentError}
-          </Alert>
+          {commentError && (
+            <Alert color="failure" className="mt-5">
+              {commentError}
+            </Alert>
+          )}
         </form>
       )}
     </div>
