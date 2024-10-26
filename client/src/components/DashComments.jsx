@@ -1,4 +1,4 @@
-import { Button, Modal, Table } from "flowbite-react";
+import { Button, Modal, Spinner, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useSelector } from "react-redux";
@@ -10,9 +10,12 @@ export default function DashComments() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [commentIdToDelete, setCommentIdToDelete] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     const fetchComments = async () => {
+      setLoading(true);
       try {
         const res = await fetch(`/api/comment/getcomments`);
         const data = await res.json();
@@ -26,6 +29,8 @@ export default function DashComments() {
         }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -36,8 +41,11 @@ export default function DashComments() {
 
   const handleShowMore = async () => {
     const startIndex = comments.length;
+    setLoadingMore(true);
     try {
-      const res = await fetch(`/api/comment/getcomments?startIndex=${startIndex}`);
+      const res = await fetch(
+        `/api/comment/getcomments?startIndex=${startIndex}`
+      );
       const data = await res.json();
 
       if (res.ok) {
@@ -48,18 +56,24 @@ export default function DashComments() {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
   const handleDeleteComment = async () => {
-
     try {
-      const res = await fetch(`/api/comment/deleteComment/${commentIdToDelete}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `/api/comment/deleteComment/${commentIdToDelete}`,
+        {
+          method: "DELETE",
+        }
+      );
       const data = await res.json();
-      if(res.ok) {
-        setComments((prev) => prev.filter((comment) => comment._id !== commentIdToDelete));
+      if (res.ok) {
+        setComments((prev) =>
+          prev.filter((comment) => comment._id !== commentIdToDelete)
+        );
         setShowModal(false);
       } else {
         console.log(data.message);
@@ -71,7 +85,11 @@ export default function DashComments() {
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 scrollbar-track-slate-700 scrollbar-thumb-slate-500">
-      {currentUser.isAdmin && comments.length > 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <Spinner size="xl" />
+        </div>
+      ) : currentUser.isAdmin && comments.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
             <Table.Head>
@@ -89,14 +107,10 @@ export default function DashComments() {
                   <Table.Cell>
                     {new Date(comment.updatedAt).toLocaleDateString()}
                   </Table.Cell>
-                  <Table.Cell>
-                    {comment.content}
-                  </Table.Cell>
+                  <Table.Cell>{comment.content}</Table.Cell>
                   <Table.Cell>{comment.numberOfLikes}</Table.Cell>
                   <Table.Cell>{comment.postId}</Table.Cell>
-                  <Table.Cell>
-                    {comment.userId}
-                  </Table.Cell>
+                  <Table.Cell>{comment.userId}</Table.Cell>
                   <Table.Cell>
                     <span
                       onClick={() => {
@@ -117,7 +131,7 @@ export default function DashComments() {
               className="w-full text-teal-500 self-center text-sm py-7"
               onClick={handleShowMore}
             >
-              Show More
+              {loadingMore ? <Spinner /> : "Show More"}
             </button>
           )}
         </>

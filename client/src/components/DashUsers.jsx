@@ -1,4 +1,4 @@
-import { Button, Modal, Table } from "flowbite-react";
+import { Button, Modal, Spinner, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useSelector } from "react-redux";
@@ -10,9 +10,12 @@ export default function DashUsers() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [userIdToDelete, setUserIdToDelete] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
+      setLoading(true);
       try {
         const res = await fetch(`/api/user/getusers`);
         const data = await res.json();
@@ -26,6 +29,8 @@ export default function DashUsers() {
         }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -36,6 +41,7 @@ export default function DashUsers() {
 
   const handleShowMore = async () => {
     const startIndex = users.length;
+    setLoadingMore(true);
     try {
       const res = await fetch(`/api/user/getusers?startIndex=${startIndex}`);
       const data = await res.json();
@@ -48,16 +54,18 @@ export default function DashUsers() {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
   const handleDeleteUser = async () => {
     try {
       const res = await fetch(`/api/user/delete/${userIdToDelete}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
       const data = await res.json();
-      if(res.ok) {
+      if (res.ok) {
         setUsers((prev) => prev.filter((user) => user._id !== userIdToDelete));
         setShowModal(false);
       } else {
@@ -70,7 +78,11 @@ export default function DashUsers() {
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 scrollbar-track-slate-700 scrollbar-thumb-slate-500">
-      {currentUser.isAdmin && users.length > 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <Spinner size="xl" />
+        </div>
+      ) : currentUser.isAdmin && users.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
             <Table.Head>
@@ -124,7 +136,7 @@ export default function DashUsers() {
               className="w-full text-teal-500 self-center text-sm py-7"
               onClick={handleShowMore}
             >
-              Show More
+              {loadingMore ? <Spinner /> : "Show More"}
             </button>
           )}
         </>

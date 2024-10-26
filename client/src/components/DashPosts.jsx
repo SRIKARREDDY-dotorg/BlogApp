@@ -1,4 +1,4 @@
-import { Button, Modal, Table } from "flowbite-react";
+import { Button, Modal, Spinner, Table } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
 import { useSelector } from "react-redux";
@@ -10,6 +10,8 @@ export default function DashPosts() {
   const [showMore, setShowMore] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [postIdToDelete, setPostIdToDelete] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   const handleDeletePost = async () => {
     setShowModal(false);
@@ -25,7 +27,7 @@ export default function DashPosts() {
       if (!res.ok) {
         console.log(data.message);
       } else {
-        setUserPosts((prev) => 
+        setUserPosts((prev) =>
           prev.filter((post) => post._id !== postIdToDelete)
         );
       }
@@ -36,6 +38,7 @@ export default function DashPosts() {
 
   useEffect(() => {
     const fetchPosts = async () => {
+      setLoading(true);
       try {
         const res = await fetch(`/api/post/getposts?userId=${currentUser._id}`);
         const data = await res.json();
@@ -43,12 +46,14 @@ export default function DashPosts() {
         if (res.ok) {
           setUserPosts(data.posts);
           if (data.posts.length < 9) {
-            console.log('Posts size is less than 9');
+            console.log("Posts size is less than 9");
             setShowMore(false);
           }
         }
       } catch (error) {
         console.log(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -59,6 +64,7 @@ export default function DashPosts() {
 
   const handleShowMore = async () => {
     const startIndex = userPosts.length;
+    setLoadingMore(true);
     try {
       const res = await fetch(
         `/api/post/getposts?userId=${currentUser._id}&startIndex=${startIndex}`
@@ -73,12 +79,18 @@ export default function DashPosts() {
       }
     } catch (error) {
       console.log(error.message);
+    } finally {
+      setLoadingMore(false);
     }
   };
 
   return (
     <div className="table-auto overflow-x-scroll md:mx-auto p-3 scrollbar scrollbar-track-slate-100 scrollbar-thumb-slate-300 scrollbar-track-slate-700 scrollbar-thumb-slate-500">
-      {currentUser.isAdmin && userPosts.length > 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center h-screen">
+          <Spinner size="xl" />
+        </div>
+      ) : currentUser.isAdmin && userPosts.length > 0 ? (
         <>
           <Table hoverable className="shadow-md">
             <Table.Head>
@@ -144,7 +156,7 @@ export default function DashPosts() {
               className="w-full text-teal-500 self-center text-sm py-7"
               onClick={handleShowMore}
             >
-              Show More
+              {loadingMore ? <Spinner /> : "Show More"}
             </button>
           )}
         </>
